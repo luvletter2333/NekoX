@@ -22,6 +22,7 @@ if (serviceAccountCredentialsFile.isFile()) {
     play.serviceAccountCredentials = serviceAccountCredentialsFile
 } else if (System.getenv().containsKey("ANDROID_PUBLISHER_CREDENTIALS")) {
     setupPlay(beta)
+
 }
 
 void setupPlay(boolean beta) {
@@ -75,8 +76,14 @@ if (!gradle.startParameter.taskNames.isEmpty()) {
 
 def nativeTarget = System.getenv("NATIVE_TARGET")
 if (nativeTarget == null) nativeTarget = ""
+nativeTarget = "x86_64"
+
 
 android {
+
+    packagingOptions {
+        doNotStrip "libtmessages.37.so"
+    }
     compileSdkVersion 30
     buildToolsVersion "30.0.3"
     ndkVersion rootProject.ext.ndkVersion
@@ -113,6 +120,8 @@ android {
         versionName verName
         versionCode verCode
 
+        multiDexEnabled true
+
         def appId = "1391584"
         def appHash = "355c91550b0d658cfb7ff89dcf91a08c"
 
@@ -131,8 +140,12 @@ android {
 
         externalNativeBuild {
             cmake {
+                abiFilters("x86_64")
                 version "3.10.2"
-                arguments "-DANDROID_STL=c++_static", "-DANDROID_PLATFORM=android-16", "-j=${Runtime.getRuntime().availableProcessors()}"
+                arguments "-DANDROID_STL=c++_static",
+                        "-DANDROID_PLATFORM=android-16",
+                        "-j=${Runtime.getRuntime().availableProcessors()}",
+                        "-DCMAKE_BUILD_TYPE=Debug"
             }
         }
 
@@ -198,7 +211,10 @@ android {
         debug {
             isDefault true
             debuggable true
-            jniDebuggable false
+            jniDebuggable true
+            ndk.debugSymbolLevel = 'FULL'
+            minifyEnabled false
+            shrinkResources false
             multiDexEnabled true
             zipAlignEnabled true
             signingConfig keystorePwd == null ? signingConfigs.debug : signingConfigs.release
@@ -229,10 +245,11 @@ android {
         }
 
         foss {
-            debuggable false
-            jniDebuggable false
-            minifyEnabled true
-            shrinkResources true
+            debuggable true
+            jniDebuggable true
+            ndk.debugSymbolLevel = 'FULL'
+            minifyEnabled false
+            shrinkResources false
             multiDexEnabled true
             zipAlignEnabled true
             proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
@@ -262,9 +279,12 @@ android {
             java {
                 srcDirs "src/main/java", "src/gservcies/java"
             }
-            jniLibs {
-                srcDir "src/main/libs"
+            jni {
+                srcDirs = ["./jni/"]
             }
+//            jniLibs {
+//                srcDir "src/main/libs"
+//            }
             manifest {
                 srcFile "src/gservcies/AndroidManifest.xml"
             }
@@ -344,7 +364,8 @@ android {
     }
 
     tasks.all { task ->
-        if (((task.name.endsWith("Ndk") || task.name.startsWith("generateJsonModel") || task.name.startsWith("externalNativeBuild"))) && !(task.name.contains("Foss") || task.name.contains("Fdroid"))) {
+        if (((task.name.endsWith("Ndk") || task.name.startsWith("generateJsonModel")
+                || task.name.startsWith("externalNativeBuild"))) && !(task.name.contains("Debug") || task.name.contains("Fdroid"))) {
             task.enabled = false
         }
         if (task.name.contains("uploadCrashlyticsMappingFile")) {

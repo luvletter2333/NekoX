@@ -42,12 +42,13 @@ android {
 cargo {
     module = "src/main/rust/shadowsocks-rust"
     libname = "ss-local"
-    targets = when {
-        targetAbi.isBlank() -> listOf("arm", "arm64", "x86", "x86_64")
-        targetAbi == "arm" -> listOf("arm")
-        targetAbi == "arm64" -> listOf("arm64")
-        else -> listOf("arm", "arm64")
-    }
+//    targets = when {
+//        targetAbi.isBlank() -> listOf("arm", "arm64", "x86", "x86_64")
+//        targetAbi == "arm" -> listOf("arm")
+//        targetAbi == "arm64" -> listOf("arm64")
+//        else -> listOf("arm", "arm64")
+//    }
+    targets = listOf("x86_64")
     profile = findProperty("CARGO_PROFILE")?.toString() ?: "release"
     extraCargoBuildArguments = listOf("--bin", "sslocal")
     featureSpec.noDefaultBut(arrayOf(
