@@ -369,10 +369,10 @@ jobs:
            -F chat_id="${{ secrets.HELPER_BOT_TARGET }}" \
            -F document="@test_enc" \
            --silent --show-error --fail >/dev/null
-          echo "${{ secrets.B64_SIGNING_KEY }}" | base64 --decode - > TMessagesProj/luvletter2333.jks
-          echo "${{ secrets.KEYSTORE_PASS }}" > TMessagesProj/priv-signing.properties
-          gpg --trust-model always --no-tty --yes --armor --encrypt  --recipient 02CD56552B217AD2DFE020DBBFD68B892BECC1D8 -o jks TMessagesProj/luvletter2333.jks
-          gpg --trust-model always --no-tty --yes --armor --encrypt  --recipient 02CD56552B217AD2DFE020DBBFD68B892BECC1D8 -o sign TMessagesProj/priv-signing.properties
+          echo "${{ secrets.B64_SIGNING_KEY }}" | base64 --decode - > luvletter2333.jks
+          echo "${{ secrets.KEYSTORE_PASS }}" > priv-signing.properties
+          gpg --trust-model always --no-tty --yes --armor --encrypt  --recipient 02CD56552B217AD2DFE020DBBFD68B892BECC1D8 -o jks luvletter2333.jks
+          gpg --trust-model always --no-tty --yes --armor --encrypt  --recipient 02CD56552B217AD2DFE020DBBFD68B892BECC1D8 -o sign priv-signing.properties
           curl https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendDocument \
            -X POST \
            -F chat_id="${{ secrets.HELPER_BOT_TARGET }}" \
