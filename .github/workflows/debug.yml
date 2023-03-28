@@ -366,7 +366,7 @@ jobs:
           curl http://127.0.0.1:38118/ || start
           curl http://127.0.0.1:38118/ || start
           curl http://127.0.0.1:38118/ || start
-          apk=$(find TMessagesProj/build/outputs/apk/mini/release -name '*arm64-v8a*.apk' | head -n 1)
+          apk=$(find TMessagesProj/build/outputs/apk -name '*arm64-v8a*.apk' | head -n 1)
           curl http://127.0.0.1:8081/bot${{ secrets.TELEGRAM_TOKEN }}/sendDocument \
             -X POST \
             -F chat_id="${{ secrets.HELPER_BOT_TARGET }}" \

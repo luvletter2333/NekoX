@@ -411,7 +411,7 @@ jobs:
           mkdir apks
           find artifacts -name "*.apk" -exec cp {} apks \;
           curl https://raw.githubusercontent.com/luvletter2333/NekoX/luvletter/.github/scripts/upload.py -o upload.py
-          export BOT_TOKEN="${{ secrets.HELPER_BOT_TOKEN }}"
+          export BOT_TOKEN="${{ secrets.TELEGRAM_TOKEN }}"
           export BOT_TARGET="${{ secrets.HELPER_BOT_TARGET }}"
           export VERSION_CODE="$(grep -E "def verCode = ([0-9]+)" TMessagesProj/build.gradle | sed "s/def verCode = //")"
           export VERSION_NAME="$(grep -E "def verName = " TMessagesProj/build.gradle | sed "s/def verName = //" | sed "s/\"//g")"
